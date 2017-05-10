@@ -1,6 +1,8 @@
 # Polocracy
 Polymer pour l'holacracy
 
+![Image of Polocracy](https://raw.githubusercontent.com/scenaristeur/Polocracy/master/documentation/polocracy%20starterkit.png)
+
 # Installation
  pré-requis : nodejs, npm et bower
 
