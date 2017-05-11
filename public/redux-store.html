@@ -16,9 +16,10 @@ graphe: "<http://smag0.blogspot.fr/SparqlUpdate>",
 */
 
 const initialState = {
+  lang: "fr",
   endpoints: ["http://127.0.0.1:3030", "https://rdf-smag0.rhcloud.com", "https://fuseki-smag0.rhcloud.com"],
-  statements: [],
-  url: "http://127.0.0.1:3030",
+  url: "http://127.0.0.1:3030"
+  /*  statements: [],
   ds: "test",
   graphe: "<http://smag0.blogspot.fr/SparqlUpdate>",
   currentNode: {},
@@ -26,32 +27,29 @@ const initialState = {
   nb: 0,
   objets: ["Chose", "Projet", "Environnement", "Acteur", "Compétence", "Organisation", "Rôle", "Action", "Evénement", "Etape", "Autre"],
   proprietes: ["type", "label", "hasPart", "isPartOf", "subClassOf", "sameAs", "Autre"],
-  lang: "fr",
   derniers: [],
   longueurDerniers: 9,
-  vocabulaires: {"Personne" : "foaf", "Projet": "doap"},
-
+  vocabulaires: {"Personne" : "foaf", "Projet": "doap"},*/
 };
 
-/* DEBUT a virer dans une autre page avec une action */
-
+// DEBUT a virer dans une autre page avec une action
 if ((window.location.hostname != "127.0.0.1") && (window.location.hostname != "localhost")){
   initialState.url =  "https://rdf-smag0.rhcloud.com";
   initialState.ds = "ds";
   initialState.graphe = "<http://smag0.blogspot.fr/SparqlUpdate>";
 }
-
-
-
-
-
-/* FIN A VIRER DANS UNE AUTRE PAGE */
+// FIN A VIRER DANS UNE AUTRE PAGE
 
 
 
 const reducer = (state, action) => {
   if (!state) return initialState;
   switch (action.type) {
+    case 'UPDATE_LANG':
+    const lang = action.lang;
+    return Object.assign({}, state, { lang:lang});
+    break;
+    /*
     case 'ADD_STATEMENT':
     const statements = state.statements.slice(0);
     statements.push(action.statement);
@@ -120,7 +118,7 @@ const reducer = (state, action) => {
     //console.log(graphe);
     return Object.assign({}, state, { url: url,ds: ds, graphe:graphe });
     break;
-
+*/
     default:
     console.log("reducer ne connait pas cette action");
   }

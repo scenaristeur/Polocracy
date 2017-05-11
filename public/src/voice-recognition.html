@@ -8,6 +8,8 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
+<!-- source https://shapeshed.com/html5-speech-recognition-api/ -->
+
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="../bower_components/iron-icon/iron-icon.html">
@@ -15,51 +17,40 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 
 
-<dom-module id="lang-changer">
+<dom-module id="voice-recognition">
   <template>
     <style include="shared-styles">
           :host {
             color : white;
           }
     </style>
-     <span hidden$={{hideInput}}><paper-input label="Langue" on-blur="_changeLang" value="{{lang}}"></paper-input></span>
-     <span hidden$={{!hideInput}}><iron-icon icon="vaadin:globe"  on-tap="_hideInputTrue"></iron-icon> {{lang}}</span>
-
-
-
-
+     <iron-icon icon="vaadin:microphone"  on-tap="_startRecognition"></iron-icon>
   </template>
 
   <script>
     Polymer({
-      is: 'lang-changer',
+      is: 'voice-recognition',
       behaviors: [ ReduxBehavior],
       actions:{
-        updateLang: function(lang){
-          return {
-            type: 'UPDATE_LANG',
-            lang: lang
-          }
-        }
+
       },
       properties: {
-        lang: {
+        recJSON: {
           type: String,
           statePath: 'lang'
         },
-        hideInput: {
-          type: Boolean,
-          value: true
+      },
+      _startRecognition: function(){
+      //  var recognition = new webkitSpeechRecognition(); // ou pour Firefox :
+      var recognition = new SpeechRecognition();
+        console.log(recognition);
+        recognition.onresult = function(event) {
+          this.recJSON = event;
+         console.log(event)
         }
-      },
-      _hideInputTrue: function(){
-          this.hideInput = false;
-      },
-      _changeLang: function(){
-        var lang = this.lang;
-        this.hideInput = true;
-        this.dispatch('updateLang', lang);
+        recognition.start();
       }
+
 
 
     });
