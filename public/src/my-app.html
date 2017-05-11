@@ -26,6 +26,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="my-icons.html">
 <link rel="import" href="lang-changer.html">
 <link rel="import" href="voice-recognition.html">
+<link rel="import" href="holocracy-glossaire.html">
 
 
 <dom-module id="my-app">
@@ -79,6 +80,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <a name="index-accueil" href="/">Accueil</a>
           <a name="my-view2" href="/my-view2">View Two</a>
           <a name="param-source" href="/param-source">Source</a>
+          <a name="holocracy-glossaire" href="/holocracy-glossaire">Glossaire</a>
         </iron-selector>
       </app-drawer>
 
@@ -101,7 +103,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             role="main">
           <index-accueil name="index-accueil"></index-accueil>
           <my-view2 name="my-view2"></my-view2>
-          <param-source name="param-source"></source>
+          <param-source name="param-source"></param-source>
+          <holocracy-glossaire name="holocracy-glossaire"></holocracy-glossaire>
           <view404 name="view404"></view404>
         </iron-pages>
       </app-header-layout>
@@ -124,6 +127,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         '_routePageChanged(routeData.page)',
       ],
 
+      ready: function(){
+        var bSp = document.getElementById('bodySpinner');
+        bSp.remove();
+      },
       _routePageChanged: function(page) {
         this.page = page || 'index-accueil';
 

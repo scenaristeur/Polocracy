@@ -11,3 +11,7 @@ server.listen(port, function () {
 
 // Routing
 app.use(express.static(__dirname + '/public'));
+// Render index.html on the main page pour eviter les messages "Cannot GET"
+app.get('*', function(req, res){
+  res.sendFile("/public/index.html", {root: '.'});
+});
