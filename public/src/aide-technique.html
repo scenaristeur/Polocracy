@@ -1,2 +1,93 @@
-# Afficher les valeurs du statut de l'application contenues dans le store Redux
-Dans la console javascript, lancer la commande ' store.getState(); '
+
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+
+<dom-module id="aide-technique">
+  <template>
+  <style include="shared-styles">
+    :host {
+      display: block;
+
+      padding: 10px;
+    }
+  </style>
+
+  <iron-list items="[[aides]]" as="aide">
+    <template>
+      <div tabindex$="[[tabIndex]]">
+        <div class="card">
+          <h3>[[aide.name]]</h3>
+            <p>[[aide.description]]</p>
+            <iron-list items="[[aide.paragraphs]]" as="aParag">
+              <template>
+                <div tabindex$="[[tabIndexP]]">
+                  <p>[[aParag]] </p>
+                </div>
+              </template>
+            </iron-list>
+            <iron-list items="[[aide.links]]" as="aLink">
+              <template>
+                <div tabindex$="[[tabIndexL]]">
+                  <paper-button on-tap="_openLink" link="[[aLink.link]]" raised>[[aLink.name]] [[[aLink.lang]]]</paper-button>
+                </div>
+              </template>
+            </iron-list>
+        </div>
+      </div>
+    </template>
+  </iron-list>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'aide-technique',
+      properties: {
+        aides:{
+          Array,
+          value: function(){
+            return [
+              {
+              name: "Afficher la console Javascript",
+              paragraphs: ["Ctrl+Shift+K"], //non utilisé pour l'instant
+              links: []
+            },
+            {
+            name: "Afficher les valeurs du statut de l'application contenues dans le store Redux",
+            lang: "fr", //non utilisé pour l'instant
+            description: "",
+            paragraphs: ["Dans la console javascript, lancer la commande ' store.getState(); '"], //non utilisé pour l'instant
+            links: []
+            },
+            {
+            name: "Afficher la console Réseau pour vérifier le chargement des composants",
+            lang: "fr", //non utilisé pour l'instant
+            description: "",
+            paragraphs: ["Ctrl+Shift+Q"], //non utilisé pour l'instant
+            links: []
+            }
+            ];
+          }
+        },
+      },
+      _openLink: function(e){
+        window.open(e.target.link);
+      }
+
+    });
+  </script>
+</dom-module>
