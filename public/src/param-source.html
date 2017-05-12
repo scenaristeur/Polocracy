@@ -10,46 +10,196 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="shared-styles.html">
+<link rel="import" href="../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 
 
 
 <dom-module id="param-source">
   <template>
-    <style include="shared-styles">
-      :host {
-        display: block;
+  <style include="shared-styles">
+  :host {
+    display: block;
 
-        padding: 10px;
-      }
-    </style>
+    padding: 10px;
+  }
+  </style>
 
-    <div class="card">
-      <div class="circle">3</div>
-      <h1>View Three</h1>
-      <p>Modus commodo minimum eum te, vero utinam assueverit per eu.</p>
-      <p>Ea duis bonorum nec, falli paulo aliquid ei eum.Has at minim mucius aliquam, est id tempor laoreet.Pro saepe pertinax ei, ad pri animal labores suscipiantur.</p>
-      <p>{{url}}</p>
-      <p>[[endpoints]]</p>
+  <iron-ajax
+  id="getEndpointDetail"
+  url="{{urlDetail}}"
+  endpoint="{{endpoint}}"
+  params="{{options}}"
+  handle-as="json"
+  on-response="_handleDetail"
+  on-error="_detailError"
+  debounce-duration="300">
+</iron-ajax>
+
+<iron-ajax
+id="getGraphs"
+url="{{urlGraphs}}"
+endpoint="{{endpoint}}"
+params="{{options}}"
+handle-as="json"
+on-response="_handleGraphs"
+on-error="_graphsError"
+debounce-duration="300">
+</iron-ajax>
+
+
+<iron-list items="[[endpointsDetailles]]" as="endpointDetaille">
+  <template>
+    <div tabindex$="[[tabIndex]]">
+      <div class="card">
+        <div class="circle">[[endpointDetaille.name]]</div>
+        <h1>[[endpointDetaille.url]]</h1>
+        <p> OK: [[endpointDetaille.active]], type: [[endpointDetaille.type]], version: [[endpointDetaille.detail.version]], uptime : [[endpointDetaille.detail.uptime]], score : [[endpointDetaille.score]]</p>
+
+        <p>[[endpointDetaille.description]]</p>
+        <h3>Datasets</h3>
+        <iron-list items="[[endpointDetaille.detail.datasets]]" as="dataset">
+          <template>
+            <div tabindex$="[[tabIndexDs]]">
+              [[dataset.name]] state : [[dataset.state]]
+            </div>
+          </template>
+        </iron-list>
+      </div>
     </div>
   </template>
+</iron-list>
+</template>
 
-  <script>
-    Polymer({
-      is: 'param-source',
-      behaviors: [ ReduxBehavior],
-      actions:{
+<script>
+Polymer({
+  is: 'param-source',
+  behaviors: [ ReduxBehavior],
+  actions:{
 
-      },
-      properties: {
-        url: {
-          type: String,
-          statePath: 'url'
-        },
-        endpoints: {
-          type: Array,
-          statePath: 'endpoints'
-        },
+  },
+  properties: {
+    url: {
+      type: String,
+      statePath: 'url'
+    },
+    endpointsConnus: {
+      type: Array,
+      statePath: 'endpointsConnus',
+      observer: '_endpointsConnusChanged'
+    },
+    endpoint:{
+      type: Object,
+    },
+    endpointsDetailles:{
+      type: Array,
+      value: []
+    }
+  },
+  /** en cas de modification des endpoints, actualisation des détails **/
+  _endpointsConnusChanged: function(newEndpointsConnus,oldEndpointsConnus){
+    for (i = 0; i < newEndpointsConnus.length; i++) {
+      var endpoint = newEndpointsConnus[i];
+      var endpointDetail = newEndpointsConnus[i].urlDetail;
+      if (endpointDetail != undefined){
+        this.endpoint = newEndpointsConnus[i];
+        this.urlDetail = newEndpointsConnus[i].url+newEndpointsConnus[i].urlDetail;
+        this.$.getEndpointDetail.generateRequest();
+      }else{
+        endpoint.active = "unknown";
+        this.push('endpointsDetailles',endpoint);
       }
-    });
-  </script>
+    }
+    console.log(this.endpointsDetailles);
+  },
+  /**
+  * Recuperation des details du endpoint
+  **/
+  _handleDetail: function(data){
+    var endpoint = data.target.endpoint;
+    endpoint.detail = this.bidouilleJSONfusekiKey(data.detail.response);
+    endpoint.active = "true";
+    this.getGraphs(endpoint);
+    this.unshift('endpointsDetailles',endpoint);
+  },
+  /**
+  * en cas d'erreur de la requete
+  */
+  _detailError: function(data){
+    var endpoint = data.target.endpoint;
+    console.log("ERREUR SUR : "+endpoint);
+    console.log(data);
+    console.log(data.detail.response);
+    console.log(data.detail.error);
+    console.log(data.detail.error.message);
+    endpoint.active = "false";
+    this.push('endpointsDetailles',endpoint);
+  },
+  /**
+  * GET graphs
+  */
+  getGraphs: function(endpoint){
+    var datasets = endpoint.detail.datasets;
+    for (i=0; i< datasets.length; i++){
+      var ds = datasets[i];
+
+      if(ds.state){
+        var url = endpoint.url+ds.name+'/query';
+        var query = 'SELECT ?g WHERE { GRAPH ?g { } }';
+
+        var params= {query: query,output: 'json'};
+        console.log(url);
+        this.$.getGraphs.url=url;
+        this.$.getGraphs.endpoint=endpoint;
+        this.$.getGraphs.ds=ds.name.substring(1);
+        this.$.getGraphs.params=params;
+        console.log(this.$.getGraphs);
+        this.$.getGraphs.generateRequest();
+      }else{
+        console.log("pb avec le dataset : "+ds.name+" "+ds.state)
+      }
+    }
+  },
+  _handleGraphs: function(data){
+    var endpoint = data.target.endpoint;
+    var ds = data.target.ds;
+    var head=data.detail.response.head.vars;
+    var graphs=data.detail.response.results.bindings;
+    console.log(endpoint);
+    console.log(ds);
+    console.log(graphs);
+  },
+  _graphsError: function(data){
+    console.log(data);
+    console.log(data.detail.response);
+    console.log(data.detail.error);
+    console.log(data.detail.error.message);
+  },
+  bidouilleJSONfusekiKey: function(detail){
+    // PB with Fuseki JSON returned : the keys contains point like "ds.name"...
+    var datasetsTemp = detail.datasets;
+    var datasets = [];
+    for (i=0 ; i < datasetsTemp.length;  i++){
+      var dsTemp = datasetsTemp[i];
+      var ds = {};
+      ds.name = dsTemp['ds.name'];
+      var servicesTemp = dsTemp['ds.services'];
+      var services = [];
+      for (j=0; j<servicesTemp.length; j++){
+        var serviceTemp = servicesTemp[j];
+        var service = {};
+        service.description = serviceTemp['srv.description'];
+        service.endpoints = serviceTemp['srv.endpoints'];
+        service.type = serviceTemp['srv.type'];
+        services.push(service);
+      }
+      ds.services = services;
+      ds.state = dsTemp['ds.state'];
+      datasets.push(ds);
+    }
+    detail.datasets = datasets;
+    return detail;
+  }
+});
+</script>
 </dom-module>

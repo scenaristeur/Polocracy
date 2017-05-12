@@ -17,51 +17,51 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <dom-module id="lang-changer">
   <template>
-    <style include="shared-styles">
-          :host {
-            color : white;
-          }
-    </style>
-     <span hidden$={{hideInput}}><paper-input label="Langue" on-blur="_changeLang" value="{{lang}}"></paper-input></span>
-     <span hidden$={{!hideInput}}><iron-icon icon="vaadin:globe"  on-tap="_hideInputTrue"></iron-icon> {{lang}}</span>
+  <style include="shared-styles">
+  :host {
+    color : white;
+  }
+  </style>
+  <span hidden$={{hideInput}}><paper-input label="Langue" on-blur="_changeLang" value="{{lang}}"></paper-input></span>
+  <span hidden$={{!hideInput}}><iron-icon icon="vaadin:globe"  on-tap="_hideInputTrue"></iron-icon> {{lang}}</span>
 
 
 
 
-  </template>
+</template>
 
-  <script>
-    Polymer({
-      is: 'lang-changer',
-      behaviors: [ ReduxBehavior],
-      actions:{
-        updateLang: function(lang){
-          return {
-            type: 'UPDATE_LANG',
-            lang: lang
-          }
-        }
-      },
-      properties: {
-        lang: {
-          type: String,
-          statePath: 'lang'
-        },
-        hideInput: {
-          type: Boolean,
-          value: true
-        }
-      },
-      _hideInputTrue: function(){
-          this.hideInput = false;
-      },
-      _changeLang: function(){
-        var lang = this.lang;
-        this.hideInput = true;
-        this.dispatch('updateLang', lang);
+<script>
+Polymer({
+  is: 'lang-changer',
+  behaviors: [ ReduxBehavior],
+  actions:{
+    updateLang: function(lang){
+      return {
+        type: 'UPDATE_LANG',
+        lang: lang
       }
+    }
+  },
+  properties: {
+    lang: {
+      type: String,
+      statePath: 'lang'
+    },
+    hideInput: {
+      type: Boolean,
+      value: true
+    }
+  },
+  _hideInputTrue: function(){
+    this.hideInput = false;
+  },
+  _changeLang: function(){
+    var lang = this.lang;
+    this.hideInput = true;
+    this.dispatch('updateLang', lang);
+  }
 
 
-    });
-  </script>
+});
+</script>
 </dom-module>

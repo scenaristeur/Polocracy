@@ -17,7 +17,12 @@ graphe: "<http://smag0.blogspot.fr/SparqlUpdate>",
 
 const initialState = {
   lang: "fr",
-  endpoints: ["http://127.0.0.1:3030", "https://rdf-smag0.rhcloud.com", "https://fuseki-smag0.rhcloud.com"],
+  endpointsConnus: [ // prevoir d'embarquer un serveur autonome ? http://jena.apache.org/documentation/fuseki2/fuseki-embedded.html
+    {name: "local", url:"http://127.0.0.1:3030", type: "fuseki", description: "Un serveur local installé sur votre machine. Pour installer un serveur Fuseki sur votre machine, consultez la page http://smag0.blogspot.fr/p/blog-page_14.html au point n°4.", defaultDataset: "test", urlDetail: "/$/server", score: 0},
+    {name: "rdf-smag0", url: "https://rdf-smag0.rhcloud.com", type: "fuseki", description: "La deuxième version du servuer commun pour le projet Smag0 (http://smag0.blogspot.fr/)", defaultDataset: "ds" , score: 0},
+    {name: "fuseki-smag0", url: "https://fuseki-smag0.rhcloud.com", type: "fuseki", description: "La première version du servuer commun pour le projet Smag0 (http://smag0.blogspot.fr/)", defaultDataset:"ds", score: 0}
+  ],
+  endpointsCourants:[],
   url: "http://127.0.0.1:3030",
   ds: "test",
   graphe: "<http://smag0.blogspot.fr/SparqlUpdate>",
@@ -74,54 +79,54 @@ const reducer = (state, action) => {
     var currentNode = action.currentNode;
     const derniers = state.derniers.slice(0);
     if( derniers.indexOf(action.currentNode) < 0 ){
-      derniers.unshift(action.currentNode);
-    }
-    if (derniers.length > state.longueurDerniers){
-      derniers.pop();
-    }
-    return Object.assign({},state, {currentNode: currentNode, derniers: derniers});
-    break;
-    case 'SET_CURRENT_VUE':
-    console.log(action);
-    var currentVue = action.currentVue;
-    return Object.assign({},state, {currentVue: currentVue});
-    break;
-
-    case 'SET_SERVEUR':
-    const serveur = action.serveur;
-    var url ="";
-    var ds = "";
-    var graphe = "";
-    if (serveur == "local"){
-      console.log(window.location.hostname);
-      url = "http://"+window.location.hostname+":3030";
-      ds = "test";
-      graphe = "<http://smag0.blogspot.fr/SparqlUpdate>";
-    }else if (serveur == "rdf" ) {
-      url = "https://rdf-smag0.rhcloud.com";
-      ds = "ds";
-      graphe = "<http://smag0.blogspot.fr/SparqlUpdate>";
-    }
-    else if (serveur == "fuseki" ) {
-      url = "https://fuseki-smag0.rhcloud.com";
-      ds = "ds";
-      graphe = "<http://smag0.blogspot.fr/SparqlUpdate>";
-    }
-    else if (serveur == "dbpedia" ) {
-      //http://dbpedia.org/sparql/?query=SELECT+*+WHERE+{%0D%0A%3Fs+%3Fp+%3Fo%0D%0A}%0D%0ALIMIT+100&output=json
-      url = "http://dbpedia.org/sparql";
-      //  ds = "ds";
-      //  graphe = "<http://smag0.blogspot.fr/SparqlUpdate>";
-    }
-    // console.log(url);
-    //console.log(ds);
-    //console.log(graphe);
-    return Object.assign({}, state, { url: url,ds: ds, graphe:graphe });
-    break;
-*/
-    default:
-    console.log("reducer ne connait pas cette action");
+    derniers.unshift(action.currentNode);
   }
+  if (derniers.length > state.longueurDerniers){
+  derniers.pop();
+}
+return Object.assign({},state, {currentNode: currentNode, derniers: derniers});
+break;
+case 'SET_CURRENT_VUE':
+console.log(action);
+var currentVue = action.currentVue;
+return Object.assign({},state, {currentVue: currentVue});
+break;
+
+case 'SET_SERVEUR':
+const serveur = action.serveur;
+var url ="";
+var ds = "";
+var graphe = "";
+if (serveur == "local"){
+console.log(window.location.hostname);
+url = "http://"+window.location.hostname+":3030";
+ds = "test";
+graphe = "<http://smag0.blogspot.fr/SparqlUpdate>";
+}else if (serveur == "rdf" ) {
+url = "https://rdf-smag0.rhcloud.com";
+ds = "ds";
+graphe = "<http://smag0.blogspot.fr/SparqlUpdate>";
+}
+else if (serveur == "fuseki" ) {
+url = "https://fuseki-smag0.rhcloud.com";
+ds = "ds";
+graphe = "<http://smag0.blogspot.fr/SparqlUpdate>";
+}
+else if (serveur == "dbpedia" ) {
+//http://dbpedia.org/sparql/?query=SELECT+*+WHERE+{%0D%0A%3Fs+%3Fp+%3Fo%0D%0A}%0D%0ALIMIT+100&output=json
+url = "http://dbpedia.org/sparql";
+//  ds = "ds";
+//  graphe = "<http://smag0.blogspot.fr/SparqlUpdate>";
+}
+// console.log(url);
+//console.log(ds);
+//console.log(graphe);
+return Object.assign({}, state, { url: url,ds: ds, graphe:graphe });
+break;
+*/
+default:
+console.log("reducer ne connait pas cette action");
+}
 
 };
 
