@@ -19,7 +19,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 
-<dom-module id="tension-input">
+<dom-module id="cercle-detail">
   <template>
   <style include="shared-styles iron-flex"></style>
   <style is="custom-style">
@@ -60,32 +60,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <div class="card">
   <div class="container">
-    <h1>Tension    </h1>
+    <h1>Cercle</h1>
       <paper-icon-button
         icon="vaadin:question-circle-o"
         link="holocracy-glossaire"
-        anchor="tension"
+        anchor="cercle"
         on-tap="goLink">
       </paper-icon-button>
     </div>
 
   <div class="container " id="container">
-    <p>En holocracie,</p>
-    <paper-input id="nom" label="une tension" type="text"></paper-input>
-    <p>est un écart entre</p>
-    <paper-input id="cqe" label="ce qui est" type="text"></paper-input>
-    <p>&</p>
-    <paper-input id="cqde" label="ce qui devrait être" type="text"></paper-input>
-
+    <paper-input id="nom" label="Nom" type="text"></paper-input>
+    <paper-input id="nomSuper" label="Nom du super-cercle" type="text"></paper-input>
   </div>
-  <paper-button raised on-tap="addStatement">Ajouter une tension</paper-button>
+  <paper-button raised on-tap="addStatement">Ajouter un cercle</paper-button>
 </div>
 <paper-toast id="toast"></paper-toast>
 </template>
 
 <script>
 Polymer({
-  is: 'tension-input',
+  is: 'cercle-detail',
   behaviors: [ ReduxBehavior],
   actions:{
     updateLang: function(lang){

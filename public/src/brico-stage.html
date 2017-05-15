@@ -1,0 +1,440 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/vaadin-icons/vaadin-icons.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+
+<dom-module id="brico-stage">
+  <template>
+  <style include="shared-styles iron-flex"></style>
+  <style is="custom-style">
+  :host {
+    display: block;
+  }
+  .container {
+    @apply(--layout-horizontal);
+    @apply(--layout-wrap);
+  }
+  .container > p{
+    /*  padding-left: 8px;*/
+    padding-right: 8px;
+    padding-top: 20px;
+    padding-left: 8px;
+  }
+  </style>
+
+  <iron-ajax
+  id="ajaxupdate"
+  url="{{urlUpdate}}"
+  body="{{options}}"
+  method="POST"
+  handle-as="document"
+  content-type="application/x-www-form-urlencoded"
+  on-response="handleResponse"
+  on-error="ajaxError">
+</iron-ajax>
+
+
+<div class="card">
+
+    <h1>Contact</h1>
+    <p>Indiquez vos coordonnées afin d'être informé des futurs ateliers des Bricodeurs.</br>
+      Ces informations ne sont collectés dans aucun autre but que de vous informer des ateliers.</br>
+      Vous pouvez à tout moment contacter <b>Les Bricodeurs</b> à l'adresse salut@lesbricodeurs.fr,
+       afin de les modifier ou demander à les supprimer.</p>
+        <paper-input id="nomContact" label="Nom" type="text"></paper-input>
+        <paper-input id="prenomContact" label="Prénom" type="text"></paper-input>
+        <paper-input id="email" label="Email" type="email"></paper-input>
+</div>
+
+<div class="card">
+  <h1>Apprenants</h1>
+  <p>Prénoms des personnes souhaitant participer aux ateliers des bricodeurs.</p>
+ <!-- <paper-input id="prenom" label="Prénom" type="text"></paper-input> -->
+  <paper-input id="indivNomInput" value="{{individu.id}}" label="Prénom" ></paper-input>
+    <paper-input id="indivAgeInput" value="{{individu.age}}" label="Age" ></paper-input>
+		<paper-fab
+		icon="add"
+		title="Ajouter un individu"
+		on-tap="createIndividu"
+		class="blue">
+		</paper-fab>
+</div>
+
+<div hidden$="[[!hasData(individus)]]">
+<fieldset>
+  <legend>Quelques détails sur les apprenants</legend>
+  <template is="dom-repeat" items="{{individus}}">
+    <div class="card">
+      <h1>{{item.id}} 	<paper-icon-button icon="delete" on-tap="deleteIndividu"></paper-icon-button></h1>
+  <!--  <paper-item  individu={{item}}>-->
+	<!--	 <paper-input individu="[[item.id]]" on-change="_changeAge" label="Age" type="text"></paper-input>-->
+	<!--	</paper-item>-->
+    <h3>Par quels ateliers {{item.id}} est-il interessé ?</h3>
+    <p>
+      <template is="dom-repeat" items="[[ateliers]]" as="atelier">
+        <table>
+          <tr>
+            <td>
+              <paper-item>
+                <paper-checkbox individu="[[item.id]]" box="[[atelier.name]]" on-tap="_changeHandler"><b>[[atelier.name]]</b> : <span>[[atelier.description]]</span>
+                  <a href="[[atelier.link]]">[[atelier.link]]</a>
+                </paper-checkbox>
+              </paper-item>
+            </td>
+            <td>
+              <img src="[[atelier.img]]" width="50px" height="50px">
+            </td>
+          </tr>
+        </table>
+      </template>
+    </p>
+    <h3>Quand {{item.id}} est-il disponible pour les ateliers des bricodeurs ?</h3>
+    <p>
+        <template is="dom-repeat" items="[[momentJournee]]" as="mj">
+        <paper-checkbox individu="[[item.id]]" box="[[mj]]" on-tap="_changeHandler" >[[mj]] </paper-checkbox>
+        </template>
+    </p>
+    <p>
+        <template is="dom-repeat" items="[[momentSemaine]]" as="ms">
+        <paper-checkbox individu="[[item.id]]" box="[[ms]]" on-tap="_changeHandler" >[[ms]]   </paper-checkbox>
+        </template>
+    </p>
+    <p>
+        <template is="dom-repeat" items="[[momentAnnee]]" as="ma">
+        <paper-checkbox individu="[[item.id]]" box="[[ma]]" on-tap="_changeHandler" >[[ma]] </paper-checkbox>
+        </template>
+    </p>
+   </div>
+	</template>
+  </fieldset>
+</div>
+
+<div class="card">
+  <h1>Quartier</h1>
+  <p>Afin de regrouper les apprenants, et faciliter les déplacements, vous pouvez indiquer le quartier qui vous intéresse.</p>
+  <paper-input id="quartier" label="Quartier ou Arrondissement" type="text"></paper-input>
+  <paper-input id="ville" label="Ville" type="text"></paper-input>
+</div>
+
+<div class="card">
+  <h1>Complément</h1>
+<paper-textarea 
+  id="precision"
+  rows="7"
+  placeholder="Si vous le souhaitez, vous pouvez apporter quelques précisions, du style :
+  'j'ai déjà utilisé Scratch en Maths au collège et je voudrais approfondir...', ou
+  'j'ai un master en BigData, mais je voudrais apprendre à créer une application pour mon téléphone...' ou encore
+  'je peux aider un animateur pour un atelier Processing...' ou encore
+  'je souhaiterais être capable de créer une page web pour la boutique de ma soeur...'
+  'j'aimerais bien suivre les ateliers avec ma fille'
+    "
+  type="text">
+</paper-textarea>
+  <paper-button raised on-tap="addStatement">Enregistrer</paper-button>
+
+</div>
+		<paper-toast id="toast1" class="fit-bottom" text="Indiquez au moins le prénom de l'apprenant."></paper-toast>
+    <paper-toast id="toast" class="fit-bottom" text="Au mois un email pour être recontacté."></paper-toast>
+    <paper-toast id="toastResult" class="fit-bottom" text="Au mois un email pour être recontacté."></paper-toast>
+</template>
+
+<script>
+Polymer({
+  is: 'brico-stage',
+  behaviors: [ ReduxBehavior],
+  actions:{
+    updateLang: function(lang){
+      return {
+        type: 'UPDATE_LANG',
+        lang: lang
+      }
+    }
+  },
+  properties: {
+    lang: {
+      type: String,
+      statePath: 'lang'
+    },
+    contact: {
+      type: Object,
+      value: {}
+    },
+    url: {
+      type: String,
+      statePath: 'url'
+    },
+    ds:{
+      type: String,
+     statePath: 'ds'
+    /* value: "bricodeurs" */
+    },
+    graphe:{
+      type: String,
+     statePath: 'graphe'
+     /*value: "<http://smag0.blogspot.fr/BricoAtelier>"*/
+    },
+    tension:{
+      type: Object,
+      value: {}
+    },
+    individus:{
+      type: Array,
+      value:[]
+    },
+    ateliers: {
+      type: Array,
+      value:[
+        {  name: "Thymio",
+          img: "../images/thymio.jpg",
+          description: "un petit robot bardé de capteur, à partir de 5 ans.",
+          link: "https://www.thymio.org/fr:thymio"
+        },
+        { name: "Scratch",
+          img: "../images/scratch.jpg",
+          description: "Une première approche vers la programmation, à partir de 9 ans.",
+          link: "https://scratch.mit.edu/"
+        },
+        { name: "Processing",
+          img: "../images/processing.jpg",
+          description: "Après Scratch, du code efficace pour des applications dynamiques et artistiques. Des tonnes de librairies et d'outils.",
+          link: "https://processing.org/"
+        },
+        { name: "App Inventor",
+          img: "../images/appinventor.jpg",
+          description: "Créer facilement une application pour mobile Android.",
+        },
+        { name: "P5js",
+          img: "../images/p5js.jpg",
+          description: "Processing dans une page Web.",
+          link: "https://p5js.org/"
+        },
+        { name: "Arduino",
+          img: "../images/arduino.jpg",
+          description: "Une carte électronique OpenSource, à la base de la robotique domestique, des drones, des imprimantes 3D....",
+          link: "https://www.arduino.cc/"
+        },
+        { name: "Site Web, Web Application et Polymer",
+          img: "../images/webapp.jpg",
+          description: "Une page Web ou une application utilisable sur mobile ou sur PC.",
+        }
+        ]
+    },
+    momentJournee: {
+      type: Array,
+      value: ["le matin", "le midi", "l'après-midi", "début de soirée (après 17h)", "le soir"]
+    },
+    momentSemaine: {
+      type: Array,
+      value: ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
+    },
+    momentAnnee: {
+      type: Array,
+      value: ["pendant les vacances scolaires", "hors vacances scolaires"]
+    },
+    boxes: {
+      type: Array,
+      value: []
+    }
+  },
+  addStatement: function() {
+    const nomContact = this.$.nomContact;
+    const prenomContact = this.$.prenomContact;
+    const email = this.$.email;
+  
+    if (email.value){
+      // vers reduxstore
+      // this.dispatch('add', field.value);
+      // vers sparql endpoint
+      this.contact.nom = nomContact.value;
+      this.contact.prenom = prenomContact.value;
+      this.contact.email = email.value;
+      this.contact.quartier = this.$.quartier.value;
+      this.contact.ville = this.$.ville.value;
+      this.contact.precision = this.$.precision.value;
+      this.contact.apprenants = this.individus;
+      this.contact.boxes = this.boxes;
+      console.log(this.contact);
+      this.sendUpdate();
+      nomContact.value = null;
+      prenomContact.value = null;
+      email.value = null;
+      nomContact.focus();
+
+    }else{
+      this.$.toast.fitInto = this.$.container;
+      this.$.toast.text='Pour ajouter une tension, donnez-lui un nom.';
+      this.$.toast.show();
+    }
+  },
+  /**
+  * Execute la requete
+  */
+  sendUpdate: function (){
+    this.options = this.computeUpdate(this.contact,this.graphe);
+    this.$.ajaxupdate.generateRequest();
+  },
+
+  /**
+  * recupere et parse la reponse du serveur
+  */
+  handleResponse: function(data){
+    var html=data.detail.response.getElementsByTagName("html")[0];
+    var body=html.getElementsByTagName("body")[0];
+    var resultat=body.getElementsByTagName("h1")[0].firstChild.nodeValue;
+    this.result=resultat;
+    this.individus = [];
+    this.boxes = [];
+    this.$.quartier = null;
+    this.$.ville = null;
+    this.$.precision = null;
+
+        				console.log(this.result);
+                                    this.$.toastResult.text = this.result;
+    								this.$.toastResult.fitInto=this.$.indivNomInput;
+								this.$.toastResult.open();
+   // var nb=this.nb+1;
+   // this.dispatch('update_nb_maj', nb);
+  },
+
+  /**
+  * en cas d'erreur de la requete
+  */
+  ajaxError : function(data){
+    console.log(data.detail.error.message);
+    this.result =  data.detail.error.message+"\n"+this.$.ajaxupdate.url;
+                    this.$.toastResult.text = this.result;
+    								this.$.toastResult.fitInto=this.$.indivNomInput;
+								this.$.toastResult.open();
+  },
+  computeUpdate: function(contact,graphe){
+    this.urlUpdate = [this.url,this.ds,'update'].join('/');
+    // var literal = this.$.literal.checked;
+    var sujet= "Contact" + new Date().valueOf();
+    var contact = contact;
+    var nom = contact.nom;
+    var prenom = contact.prenom;
+    var email = contact.email;
+    var individus = this.replaceAll(JSON.stringify(this.individus), '"',' ');
+    var boxes = this.replaceAll(JSON.stringify(this.boxes), '"',' ');
+
+
+    var propLabel = "rdfs:label";
+    /* if (propriete == "type"){
+    propSend="<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>";
+  }*/
+
+  var update  =  "PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
+  update +=  "PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n";
+  update += "PREFIX smag:   <http://smag0.blogspot.fr/NS#> \n";
+  update += "PREFIX owl: <http://www.w3.org/2002/07/owl#> \n";
+  update += "INSERT DATA { \n";
+  if (graphe != ""){
+    update += "GRAPH "+graphe+"{ \n";
+  }
+  nom = '"'+nom+'"';
+  update += "smag:"+sujet+"   "+propLabel+"   "+nom+" . \n";
+  if (nom != null && nom.length> 0 ){
+    update += 'smag:'+sujet+'   smag:nom   '+nom+' . \n';
+  }
+  if (prenom != null && prenom.length > 0){
+    update += 'smag:'+sujet+'   smag:prenom   "'+prenom+'" . \n';
+  }
+    if (email != null && email.length > 0){
+    update += 'smag:'+sujet+'   smag:email   "'+email+'" . \n';
+  }
+      if (individus != null && individus.length > 0){
+    update += 'smag:'+sujet+'   smag:individus   "'+individus+'" . \n';
+  }
+      if (boxes != null && boxes.length > 0){
+    update += 'smag:'+sujet+'   smag:boxes   "'+boxes+'" . \n';
+  }
+  update += 'smag:'+sujet+'   rdf:type    smag:Contact . \n';
+
+  if (graphe != ""){
+    update += "  } \n";
+  }
+  update += "  } \n";
+  this.requete=update;
+  console.log(this.requete);
+  return {update: update};
+},
+					createIndividu: function(e){
+						if ((this.$.indivNomInput.value!=undefined)&&(this.$.indivNomInput.value.length>0)){
+              console.log(this.$.indivNomInput.value);
+              var individu ={};
+              individu.id = this.$.indivNomInput.value;
+              individu.age = this.$.indivAgeInput.value;
+							this.push('individus', individu);
+							//Update manuelle
+							var indivTemp=this.individus;
+							this.individus=[];
+							this.individus=indivTemp;
+							this.individu={};
+							console.log(this.individus);
+						}
+						else{
+								this.$.toast1.fitInto=this.$.indivNomInput;
+								this.$.toast1.open();
+						}
+					},
+					deleteIndividu: function(e){
+						console.log(e.model.item)
+						var indiv= e.model.item;
+						var index=this.individus.indexOf(indiv);
+						console.log(index);
+						if (index != -1) {
+							this.splice('individus',index, 1);
+						}
+						console.log(this.individus);
+					},
+          hasData: function (data) {
+            return data.length>0;
+          },
+          _changeHandler: function (event, detail, sender) {
+            console.log(event.detail.sourceEvent.target.individu);
+            console.log(event.detail.sourceEvent.target.checked);
+            console.log(event.detail.sourceEvent.target.box);
+          //  console.log(detail);
+          var checked = event.detail.sourceEvent.target.checked;
+          var individu = event.detail.sourceEvent.target.individu;
+          var box = event.detail.sourceEvent.target.box;
+          var noeud = {individu : individu, valeur : box};
+          if (checked){
+
+            this.push('boxes',noeud);
+            console.log(this.boxes);
+          }else{
+            var index=this.boxes.indexOf(noeud);
+						console.log(index);
+						if (index != -1) {
+							this.splice('boxes',index, 1);
+						}
+						console.log(this.boxes);
+          }
+},
+replaceAll : function(string,search, replacement) {
+    var target = string;
+    return target.split(search).join(replacement);
+}
+});
+</script>
+</dom-module>

@@ -10,9 +10,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="shared-styles.html">
-<link rel="import" href="brico-stage.html">
 
-<dom-module id="index-accueil">
+<link rel="import" href="tension-input.html">
+<link rel="import" href="cercle-input.html">
+<link rel="import" href="cercles-liste.html">
+
+
+
+
+<dom-module id="my-holacracy">
   <template>
     <style include="shared-styles">
       :host {
@@ -23,15 +29,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
 
     <div class="card">
-      <div class="circle">1</div>
-      <h1>Les stages & ateliers des Bricodeurs</h1>
-     </div>
-     <brico-stage></brico-stage>
+      <div class="circle">2</div>
+      <h1>Holacracy</h1>
+      <p>
+    </div>
+    <tension-input></tension-input>
+    <cercle-input></cercle-input>
+        <cercles-liste></cercles-liste>
   </template>
 
   <script>
     Polymer({
-      is: 'index-accueil',
+      is: 'my-holacracy',
     });
   </script>
 </dom-module>

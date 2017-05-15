@@ -24,10 +24,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </style>
   <span hidden$={{hideInput}}><paper-input label="Langue" on-blur="_changeLang" value="{{lang}}"></paper-input></span>
   <span hidden$={{!hideInput}}><iron-icon icon="vaadin:globe"  on-tap="_hideInputTrue"></iron-icon> {{lang}}</span>
-
-
-
-
 </template>
 
 <script>
@@ -60,8 +56,6 @@ Polymer({
     this.hideInput = true;
     this.dispatch('updateLang', lang);
   }
-
-
 });
 </script>
 </dom-module>

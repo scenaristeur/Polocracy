@@ -27,10 +27,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <iron-list items="[[glossaire]]" as="terme">
     <template>
-      <div tabindex$="[[tabIndex]]">
-        <div class="card">
+      <div tabindex$="[[tabIndex]]" id="[[terme.id]]">
+        <div class="card" >
           <div class="circle">[[terme.name]]</div>
+          <p>type : [[terme.rdfType]]</p>
           <p>[[terme.description]]</p>
+          <iron-list items="[[terme.paragraphes]]" as="tParag">
+            <template>
+                <p>[[tParag]]</p>
+            </template>
+          </iron-list>
           <iron-list items="[[terme.links]]" as="tLink">
             <template>
               <div tabindex$="[[tabIndexL]]">
@@ -53,11 +59,38 @@ Polymer({
       Array,
       value: function(){
         return [
-          {
+          { id: "holarchie",
+              name: "Holarchie",
+              lang: "fr", //non utilisé pour l'instant
+              description: "L'holarchie est la structure naturelle de tous les êtres vivants. Elle se présente en poupées russes où chaque niveau appelé 'holon' inclut et transcende le précédent.",
+              rdfType: "Structure",
+              paragraphes: [
+                  "L'holacracy utilise une nouvelle forme de structure à la place de la structure hiérarchique pyramidale : l'holarchie (Arthur Koestler)."
+                ],
+              links: [
+                {name: "BD : l'Holarchie'", lang: "fr", link:"http://labdsurlholacracy.com/flipbook-fullscreen/#page-150-151"},
+                {name: "Wikipedia : Holarchie", lang: "fr", link:"https://fr.wiktionary.org/wiki/holarchie"}
+              ]
+            },
+          { id: "cercle",
+            name: "Cercle",
+            lang: "fr", //non utilisé pour l'instant
+            description: "On appelle 'Cercle' l'unite structurelle de base.",
+            rdfType: "UniteOrganisationnelle",
+            nonType: "GroupePersonne",
+            paragraphes: [
+                "Ce n'est pas un groupe de personnes, c'est une unité organisationnelle, une cellule vivante.",
+                "Chaque cercle a une membrane différenciant l'intérieur et l'extérieur et permettant l'échange.",
+                "Chaque cercle reste aligné vers la raison d'être de l'organisation, il est autonome en terme de gouvernance, mais pas en terme de directionnalité."], //non utilisé pour l'instant
+            links: [
+              {name: "BD : le Cercle", lang: "fr", link:"http://labdsurlholacracy.com/flipbook-fullscreen/#page-148-149"}
+             ]
+          },
+          { id: "constitution",
             name: "Constitution",
             lang: "fr", //non utilisé pour l'instant
             description: "Toutes les notions importantes pour comprendre l'Holocracy sont décrites dans la Constitution :",
-            paragraphs: ["er","df","er"], //non utilisé pour l'instant
+          //  paragraphes: ["er","df","er"], non utilisé pour l'instant
             links: [
               {name: "Holacracy : la Constitution", lang: "fr", link:"http://igipartners.com/constitution-holacracy"},
               {name: "La Bande-Dessinée sur l'Holacracy", lang: "fr", link:"http://labdsurlholacracy.com/bande-dessinee-holacracy#page-6-7"},
@@ -65,11 +98,20 @@ Polymer({
               {name: "Holacracy Constitution", lang: "en", link:"http://www.holacracy.org/constitution"}
             ]
           },
-          {
+          { id : "structure",
+            name: "Organisation Structurelle",
+            lang: "fr", //non utilisé pour l'instant
+            description: "Les composants indispensables et leurs relations.",
+          //  paragraphes: ["er","df","er"], non utilisé pour l'instant
+            links: [
+              {name: "Structure Organique", lang: "fr", link:"http://labdsurlholacracy.com/flipbook-fullscreen/#page-148-149"}
+            ]
+          },
+          { id: "tension",
             name: "Tension",
             lang: "fr", //non utilisé pour l'instant
-            description: "Une TENSION est un écrat entre ' ce qui est ' et ' ce qui devrait être '",
-            paragraphs: ["er","df","er"], //non utilisé pour l'instant
+            description: "Une TENSION est un écart entre ' ce qui est ' et ' ce qui devrait être '.",
+          //  paragraphes: ["er","df","er"], non utilisé pour l'instant
             links: [
               {name: "Holacracy : Tension", lang: "en", link:"http://wiki.holacracy.org/index.php?title=Tension"},
               {name: "Processing Tensions, How To Make Things Change At Work With Holacracy", lang: "en", link:"https://blog.holacracy.org/processing-tensions-5f2712be589a"}

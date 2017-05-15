@@ -1,0 +1,133 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+
+
+
+<dom-module id="cercles-liste">
+  <template>
+  <style include="shared-styles"></style>
+
+  <iron-ajax
+  id="ajaxGet"
+  url=""
+  params=""
+  handle-as="json"
+  on-response="handleResponse"
+  on-error="ajaxError"
+  debounce-duration="300">
+</iron-ajax>
+
+
+<div class="card">
+  limite [[limite]]        -[[dataMaj]]-
+  <ul>
+    <template is="dom-repeat" items="[[cercles]]" as="cercle">
+      <li>[[cercle.value]]</li>
+    </template>
+  </ul>
+</div>
+</template>
+
+<script>
+Polymer({
+  is: 'cercles-liste',
+  behaviors: [ ReduxBehavior ],
+   actions:{
+     maj: function(objet, sens){
+       return {
+         type: 'MAJ',
+         sens: sens,
+         objet: objet
+       }
+     }
+},
+properties: {
+   url: {
+    type: String,
+    statePath: 'url',
+    observer: 'askUpdate'
+  },
+  ds: {
+    type: String,
+    statePath: 'ds',
+    observer: 'askUpdate'
+  },
+  graphe: {
+    type: String,
+    statePath: 'graphe',
+    observer: 'askUpdate'
+  },
+  limite: {
+    type: Number,
+    value: 100
+  },
+  classe: {
+    type: String,
+    value: 'Cercle'
+  },
+  cercles: {
+    type: Array
+  },
+   dataMaj: {
+    type: Array,
+    statePath: 'dataMaj',
+    observer: '_dataMajChanged'
+  },
+},
+ready: function(){
+this.askUpdate;
+},
+_dataMajChanged: function(newDataMaj, oldDataMaj){
+  console.log(this.url);
+  console.log(this.ds);
+  if ((this.url != undefined) && (this.ds != undefined) && (newDataMaj.indexOf(this.classe) > -1)) {
+    console.log(newDataMaj);
+    this.$.ajaxGet.url = [this.url,this.ds,"query"].join('/');
+    console.log(this.$.ajaxGet.url);
+    var query = "PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
+    query += "PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n";
+    query += "PREFIX smag:   <http://smag0.blogspot.fr/NS#> \n";
+    if (this.graphe != ""){
+      query += 'SELECT * FROM '+this.graphe+' WHERE { ?s rdf:type smag:'+this.classe+'  }';
+    }else{
+      query += 'SELECT * WHERE { ?s rdf:type smag:'+this.classe+'  }';
+    }
+    query += " LIMIT "+this.limite;
+    this.$.ajaxGet.params = {query: query, output: 'json'};
+    console.log(this.$.ajaxGet.params);
+    this.$.ajaxGet.generateRequest();
+  }else{
+    console.log("ne met pas a jour");
+  }
+},
+handleResponse(data){
+  console.log(data);
+  var head=data.detail.response.head.vars;
+  var results=data.detail.response.results.bindings;
+  var cerclesTemp = [];
+  for (var i = 0; i < results.length; i++) {
+    var resultat = results[i];
+    var cercle = resultat["s"];
+    cerclesTemp.push(cercle);
+  }
+  this.cercles = cerclesTemp;
+  this.dispatch('maj', 'Cercle', 'SUPP');
+},
+ajaxError: function(data){
+  console.log(data);
+  console.log(data.detail.response);
+  console.log(data.detail.error);
+  console.log(data.detail.error.message);
+},
+askUpdate: function(){
+  console.log("askup");
+  this.dispatch('maj', 'Cercle', 'ADD');
+}
+});
+
+</script>
+
+</dom-module>

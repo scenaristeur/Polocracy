@@ -71,7 +71,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         route="{{route}}"
         pattern="/:page"
         data="{{routeData}}"
-        tail="{{subroute}}"></app-route>
+        tail="{{subroute}}">
+      </app-route>
 
     <app-drawer-layout fullbleed>
       <!-- Drawer content -->
@@ -79,10 +80,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <app-toolbar>Menu</app-toolbar>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
           <a name="index-accueil" href="/">Accueil</a>
+          <a name="my-holacracy" href="/my-holacracy">Holacracy</a>
           <a name="my-view2" href="/my-view2">View Two</a>
           <a name="param-source" href="/param-source">Source</a>
           <a name="holocracy-glossaire" href="/holocracy-glossaire">Glossaire</a>
-          <a name="haide-technique" href="/aide-technique">Aide Technique</a>
+          <a name="aide-technique" href="/aide-technique">Aide Technique</a>
         </iron-selector>
       </app-drawer>
 
@@ -104,6 +106,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             fallback-selection="view404"
             role="main">
           <index-accueil name="index-accueil"></index-accueil>
+          <my-holacracy name="my-holacracy"></my-holacracy>
           <my-view2 name="my-view2"></my-view2>
           <param-source name="param-source">chargement des informations 'sources de données'</param-source>
           <holocracy-glossaire name="holocracy-glossaire"></holocracy-glossaire>
