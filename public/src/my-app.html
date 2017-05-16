@@ -32,128 +32,131 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <dom-module id="my-app">
   <template>
-    <style>
-      :host {
-        --app-primary-color: #20c1a1;
-        --app-secondary-color: #104625;
+  <style>
+  :host {
+    --app-primary-color: #20c1a1;
+    --app-secondary-color: #104625;
 
-        display: block;
-      }
+    display: block;
+  }
 
-      app-header {
-        color: #fff;
-        background-color: var(--app-primary-color);
-      }
-      app-header paper-icon-button {
-        --paper-icon-button-ink-color: white;
-      }
+  app-header {
+    color: #fff;
+    background-color: var(--app-primary-color);
+  }
+  app-header paper-icon-button {
+    --paper-icon-button-ink-color: white;
+  }
 
-      .drawer-list {
-        margin: 0 20px;
-      }
+  .drawer-list {
+    margin: 0 20px;
+  }
 
-      .drawer-list a {
-        display: block;
-        padding: 0 16px;
-        text-decoration: none;
-        color: var(--app-secondary-color);
-        line-height: 40px;
-      }
+  .drawer-list a {
+    display: block;
+    padding: 0 16px;
+    text-decoration: none;
+    color: var(--app-secondary-color);
+    line-height: 40px;
+  }
 
-      .drawer-list a.iron-selected {
-        color: black;
-        font-weight: bold;
-      }
-    </style>
+  .drawer-list a.iron-selected {
+    color: black;
+    font-weight: bold;
+  }
+  </style>
 
-    <app-location route="{{route}}"></app-location>
-    <app-route
-        route="{{route}}"
-        pattern="/:page"
-        data="{{routeData}}"
-        tail="{{subroute}}">
-      </app-route>
+  <app-location route="{{route}}"></app-location>
+  <app-route
+  route="{{route}}"
+  pattern="/:page"
+  data="{{routeData}}"
+  tail="{{subroute}}">
+</app-route>
 
-    <app-drawer-layout fullbleed>
-      <!-- Drawer content -->
-      <app-drawer id="drawer">
-        <app-toolbar>Menu</app-toolbar>
-        <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="index-accueil" href="/">Accueil</a>
-          <a name="my-holacracy" href="/my-holacracy">Holacracy</a>
-          <a name="my-view2" href="/my-view2">View Two</a>
-          <a name="param-source" href="/param-source">Source</a>
-          <a name="holocracy-glossaire" href="/holocracy-glossaire">Glossaire</a>
-          <a name="aide-technique" href="/aide-technique">Aide Technique</a>
-        </iron-selector>
-      </app-drawer>
+<app-drawer-layout fullbleed>
+  <!-- Drawer content -->
+  <app-drawer id="drawer">
+    <app-toolbar>Menu</app-toolbar>
+    <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+      <a name="index-accueil" href="/">Accueil</a>
+      <a name="my-holacracy" href="/my-holacracy">Holacracy</a>
+      <a name="my-view2" href="/my-view2">View Two</a>
+      <a name="param-source" href="/param-source">Source</a>
+      <a name="holocracy-glossaire" href="/holocracy-glossaire">Glossaire</a>
+      <a name="aide-technique" href="/aide-technique">Aide Technique</a>
+    </iron-selector>
+  </app-drawer>
 
-      <!-- Main content -->
-      <app-header-layout has-scrolling-region>
+  <!-- Main content -->
+  <app-header-layout has-scrolling-region>
 
-        <app-header condenses reveals effects="waterfall">
-          <app-toolbar>
-            <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
-            <div main-title>Polocracy</div>
-            <voice-recognition></voice-recognition>
-            <lang-changer></lang-changer>
-          </app-toolbar>
-        </app-header>
+    <app-header condenses reveals effects="waterfall">
+      <app-toolbar>
+        <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
+        <div main-title>Polocracy</div>
+        <!--<endpoint-state></endpoint-state>-->
+        <voice-recognition></voice-recognition>
+        <lang-changer></lang-changer>
+      </app-toolbar>
+    </app-header>
 
-        <iron-pages
-            selected="[[page]]"
-            attr-for-selected="name"
-            fallback-selection="view404"
-            role="main">
-          <index-accueil name="index-accueil"></index-accueil>
-          <my-holacracy name="my-holacracy"></my-holacracy>
-          <my-view2 name="my-view2"></my-view2>
-          <param-source name="param-source">chargement des informations 'sources de données'</param-source>
-          <holocracy-glossaire name="holocracy-glossaire"></holocracy-glossaire>
-          <aide-technique name="aide-technique"></aide-technique>
-          <view404 name="view404"></view404>
-        </iron-pages>
-      </app-header-layout>
-    </app-drawer-layout>
-  </template>
+    <iron-pages
+    selected="[[page]]"
+    attr-for-selected="name"
+    fallback-selection="view404"
+    role="main">
+    <index-accueil name="index-accueil"></index-accueil>
+    <my-holacracy name="my-holacracy"></my-holacracy>
+    <my-view2 name="my-view2"></my-view2>
+    <param-source name="param-source">chargement des informations 'sources de données'</param-source>
+    <holocracy-glossaire name="holocracy-glossaire"></holocracy-glossaire>
+    <aide-technique name="aide-technique"></aide-technique>
+    <view404 name="view404"></view404>
+    <my-tension name="my-tension"></my-tension>
+    <my-cercle name="my-cercle"></my-cercle>
+  </iron-pages>
+</app-header-layout>
+</app-drawer-layout>
+</template>
 
-  <script>
-    Polymer({
-      is: 'my-app',
+<script>
+Polymer({
+  is: 'my-app',
 
-      properties: {
-        page: {
-          type: String,
-          reflectToAttribute: true,
-          observer: '_pageChanged',
-        },
-      },
+  properties: {
+    page: {
+      type: String,
+      reflectToAttribute: true,
+      observer: '_pageChanged',
+    },
+  },
 
-      observers: [
-        '_routePageChanged(routeData.page)',
-      ],
+  observers: [
+    '_routePageChanged(routeData.page)',
+  ],
 
-      ready: function(){
-        var bSp = document.getElementById('bodySpinner');
-        bSp.remove();
-      },
-      _routePageChanged: function(page) {
-        this.page = page || 'index-accueil';
+  ready: function(){
+    var bSp = document.getElementById('bodySpinner');
+    bSp.remove();
+  },
+  _routePageChanged: function(page) {
+    this.page = page || 'index-accueil';
 
-        if (!this.$.drawer.persistent) {
-          this.$.drawer.close();
-        }
-      },
+    if (!this.$.drawer.persistent) {
+      this.$.drawer.close();
+    }
+  },
 
-      _pageChanged: function(page) {
-        // Load page import on demand. Show 404 page if fails
-        var resolvedPageUrl = this.resolveUrl( page + '.html');
-        this.importHref(resolvedPageUrl, null, this._showPage404, true);
-      },
+  _pageChanged: function(page) {
+    // Load page import on demand. Show 404 page if fails
+    var resolvedPageUrl = this.resolveUrl( page + '.html');
+    this.importHref(resolvedPageUrl, null, this._showPage404, true);
+  },
 
-      _showPage404: function() {
-        this.page = 'view404';
-      },
-    });
-  </script>
+  _showPage404: function() {
+    this.page = 'view404';
+  },
+});
+</script>
 </dom-module>

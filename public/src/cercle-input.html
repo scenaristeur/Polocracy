@@ -15,6 +15,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/vaadin-icons/vaadin-icons.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
@@ -71,11 +72,12 @@ on-error="ajaxError">
 
 <!-- DEBUT TEMPLATE -->
 <!-- <div class="container " id="container"> -->
-  <paper-input id="nom" label="Nom" type="text"></paper-input>
-  <paper-input id="nomSuper" label="Nom du super-cercle" type="text"></paper-input>
+<paper-input id="nom" label="Nom" type="text"></paper-input>
+<paper-input id="nomSuper" label="Nom du super-cercle" type="text"></paper-input>
+<paper-textarea id="raisonEtre" label="Raison d'être" type="text"></paper-textarea>
 <!-- </div> -->
 <paper-button id="cercleInput" raised on-tap="addStatement">Ajouter un cercle</paper-button>
-</div>
+
 <paper-toast id="toast"></paper-toast>
 <!-- FIN TEMPLATE -->
 </template>
@@ -114,12 +116,15 @@ Polymer({
   addStatement: function() {
     const nom = this.$.nom;
     const nomSuper = this.$.nomSuper;
+    const raisonEtre = this.$.raisonEtre;
     if (nom.value){
       this.cercle.nom = nom.value;
       this.cercle.nomSuper = nomSuper.value;
+      this.cercle.raisonEtre = raisonEtre.value;
       this.sendUpdate();
       nom.value = null;
       nomSuper.value = null;
+      raisonEtre.value = null;
       nom.focus();
     }else{
       this.$.toast.fitInto = this.$.nom;
@@ -145,7 +150,6 @@ Polymer({
     var resultat=body.getElementsByTagName("h1")[0].firstChild.nodeValue;
     this.result=resultat;
     console.log(this.result);
-    
     this.affiche(this.result, "cercleInput");
   },
 
@@ -160,81 +164,81 @@ Polymer({
   computeUpdate: function(cercle,graphe){
     var cercleLabel = cercle.nom;
     var cercleLocalName = this.string2Resource(cercle.nom);
-    if(cercle.nomSuper){
-    var cercleSuperLabel = cercle.nomSuper;
-    var cercleSuperLocalName = this.string2Resource(cercle.nomSuper);
-  }
+
     this.urlUpdate = [this.url,this.ds,'update'].join('/');
     var timestamp = new Date().valueOf();
     console.log(cercleLocalName);
     console.log(cercleSuperLocalName);
 
-/* Requete SPARQL */
-  var update = "PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
-  update += "PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n";
-  update += "PREFIX smag:   <http://smag0.blogspot.fr/NS#> \n";
-  update += "PREFIX owl: <http://www.w3.org/2002/07/owl#> \n";
-  update += "PREFIX dcterms: <http://purl.org/dc/terms/> \n";
-  update += "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n";
+    /* Requete SPARQL */
+    var update = "PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
+    update += "PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#> \n";
+    update += "PREFIX smag:   <http://smag0.blogspot.fr/NS#> \n";
+    update += "PREFIX owl: <http://www.w3.org/2002/07/owl#> \n";
+    update += "PREFIX dcterms: <http://purl.org/dc/terms/> \n";
+    update += "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n";
 
 
-  update += "INSERT DATA { \n";
-  if (graphe != ""){
-    update += "GRAPH "+graphe+"{ \n";
-  }
+    update += "INSERT DATA { \n";
+    if (graphe != ""){
+      update += "GRAPH "+graphe+"{ \n";
+    }
 
-  update += "smag:"+cercleLocalName+"   rdfs:label   \""+cercleLabel+"\" .\n";
-  update += "smag:"+cercleLocalName+"   rdf:type    smag:Cercle .\n";
-  update += "smag:"+cercleLocalName+"   smag:lastChangeTimestamp    \""+timestamp+"\"  .\n";
+    update += "smag:"+cercleLocalName+"   rdfs:label   \""+cercleLabel+"\" .\n";
+    update += "smag:"+cercleLocalName+"   rdf:type    smag:Cercle .\n";
+    update += "smag:"+cercleLocalName+"   smag:lastChangeTimestamp    \""+timestamp+"\"  .\n";
 
-  if (cercleSuperLocalName != null && cercleSuperLocalName.length > 0){
-    update += "smag:"+cercleSuperLocalName+"   rdfs:label         \""+cercleSuperLabel+"\" .\n";
-    update += "smag:"+cercleSuperLocalName+"   rdf:type           smag:CercleTemp .\n"; // pour verifier s'il existe déjà et qu'on doit le rattacher ou si on doit le créer
-    update += "smag:CercleTemp   rdfs:subClassOf           smag:Cercle .\n";
-    update += "smag:"+cercleLocalName+"        dcterms:isPartOf   smag:"+cercleSuperLocalName+" .\n";
-    update += "smag:"+cercleSuperLocalName+"   dcterms:hasPart    smag:"+cercleLocalName+" .\n";
-    update += "smag:"+cercleSuperLocalName+"   smag:lastChangeTimestamp    \""+timestamp+"\"  .\n";
-  }
+    if(cercle.nomSuper != null && cercleSuperLocalName.length > 0){
+      var cercleSuperLabel = cercle.nomSuper;
+      var cercleSuperLocalName = this.string2Resource(cercle.nomSuper);
+      update += "smag:"+cercleSuperLocalName+"   rdfs:label         \""+cercleSuperLabel+"\" .\n";
+      update += "smag:"+cercleSuperLocalName+"   rdf:type           smag:Cercle .\n";
+      update += "smag:"+cercleSuperLocalName+"   rdf:type           smag:CercleTemp .\n"; // pour verifier s'il existe déjà et qu'on doit le rattacher ou si on doit le créer
+      update += "smag:CercleTemp   rdfs:subClassOf           smag:Cercle .\n";
+      update += "smag:"+cercleLocalName+"        dcterms:isPartOf   smag:"+cercleSuperLocalName+" .\n";
+      update += "smag:"+cercleSuperLocalName+"   dcterms:hasPart    smag:"+cercleLocalName+" .\n";
+      update += "smag:"+cercleSuperLocalName+"   smag:lastChangeTimestamp    \""+timestamp+"\"  .\n";
+    }
 
-  if (graphe != ""){
+    if (graphe != ""){
+      update += "  } \n";
+    }
     update += "  } \n";
-  }
-  update += "  } \n";
-  this.requete=update;
-  console.log(this.requete);
-  return {update: update};
-},
-goLink: function(e){
-  var icon = e.target;
-  var button = icon.parentNode;
-  var link = button.getAttribute('link');
-  var anchor = button.getAttribute('anchor');
-  this.set('route.path', link); // ne fonctionne pas avec les ancres link+'#'+anchor
-},
-string2Resource: function(texte){
-  console.log(texte);
-  // nettoyer des caractères ne pouvant être inclus dans le nom local d'une ressource
-  texte = this.replaceAll(texte, "'", "_");
-  texte = this.replaceAll(texte, ",", "_");
-  texte = this.replaceAll(texte, ";", "_");
-  texte = this.replaceAll(texte, " ", "_");
-  // si commence par un nombre, ou precede par '_'
-  if (texte.match(/^\d/)) {
-    texte = "_"+texte;
-  }
-  // si espace, on remplace, concatene + Upper
-  return texte;
-},
-replaceAll: function(string, ancien, nouveau) {
+    this.requete=update;
+    console.log(this.requete);
+    return {update: update};
+  },
+  goLink: function(e){
+    var icon = e.target;
+    var button = icon.parentNode;
+    var link = button.getAttribute('link');
+    var anchor = button.getAttribute('anchor');
+    this.set('route.path', link); // ne fonctionne pas avec les ancres link+'#'+anchor
+  },
+  string2Resource: function(texte){
+    console.log(texte);
+    // nettoyer des caractères ne pouvant être inclus dans le nom local d'une ressource
+    texte = this.replaceAll(texte, "'", "_");
+    texte = this.replaceAll(texte, ",", "_");
+    texte = this.replaceAll(texte, ";", "_");
+    texte = this.replaceAll(texte, " ", "_");
+    // si commence par un nombre, ou precede par '_'
+    if (texte.match(/^\d/)) {
+      texte = "_"+texte;
+    }
+    // si espace, on remplace, concatene + Upper
+    return texte;
+  },
+  replaceAll: function(string, ancien, nouveau) {
     return string.split(ancien).join(nouveau);
-},
-affiche: function(texte, cible){
-   console.log(cible);
- /* var cibleDiv = document.getElementById(cible);
-  this.$.toast.fitInto = cibleDiv;
-  this.$.toast.text=texte;
-  this.$.toast.show();*/
-}
+  },
+  affiche: function(texte, cible){
+    console.log(cible);
+    /* var cibleDiv = document.getElementById(cible);
+    this.$.toast.fitInto = cibleDiv;
+    this.$.toast.text=texte;
+    this.$.toast.show();*/
+  }
 });
 </script>
 </dom-module>

@@ -11,36 +11,64 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="shared-styles.html">
 
-<link rel="import" href="tension-input.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<!--<link rel="import" href="tension-input.html">
 <link rel="import" href="cercle-input.html">
-<link rel="import" href="cercles-liste.html">
+<link rel="import" href="cercles-liste.html">-->
 
 
 
 
 <dom-module id="my-holacracy">
   <template>
-    <style include="shared-styles">
-      :host {
-        display: block;
+  <style include="shared-styles">
+  :host {
+    display: block;
 
-        padding: 10px;
-      }
-    </style>
+    padding: 10px;
+  }
+  </style>
 
-    <div class="card">
-      <div class="circle">2</div>
-      <h1>Holacracy</h1>
-      <p>
-    </div>
-    <tension-input></tension-input>
-    <cercle-input></cercle-input>
-        <cercles-liste></cercles-liste>
-  </template>
+  <app-location route="{{route}}"></app-location>
+  <app-route
+  route="{{route}}"
+  pattern="/:page"
+  data="{{routeData}}"
+  tail="{{subroute}}">
+</app-route>
 
-  <script>
-    Polymer({
-      is: 'my-holacracy',
-    });
-  </script>
+<div class="card">
+  <div class="circle">2</div>
+  <h1>Holacracy</h1>
+  <p>
+  </div>
+
+  <div class="card"
+  link="my-tension"
+  on-tap="goLink">
+  <h1>Tension</h1>
+</div>
+<div class="card"
+link="my-cercle"
+on-tap="goLink">
+<h1>Cercle</h1>
+</div>
+<!--  <tension-input></tension-input>
+<cercle-input></cercle-input>
+<cercles-liste></cercles-liste> -->
+</template>
+
+<script>
+Polymer({
+  is: 'my-holacracy',
+  goLink: function(e){
+    var icon = e.target;
+    var button = icon.parentNode;
+    var link = button.getAttribute('link');
+    var anchor = button.getAttribute('anchor');
+    this.set('route.path', link); // ne fonctionne pas avec les ancres link+'#'+anchor
+  },
+});
+</script>
 </dom-module>

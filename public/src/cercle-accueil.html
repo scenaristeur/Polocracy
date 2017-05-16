@@ -19,7 +19,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 
-<dom-module id="cercle-detail">
+<dom-module id="cercle-accueil">
   <template>
   <style include="shared-styles iron-flex"></style>
   <style is="custom-style">
@@ -38,55 +38,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   }
   </style>
 
-  <h1>cercle-detail</h1>
-  <div class="circle">[[cercle.localName]]</div>
-  <p>uri : [[cercle.value]] ([[cercle.type]])</p>
-</div>
-<!--
-  <app-location route="{{route}}"></app-location>
-  <app-route
-      route="{{route}}"
-      pattern="/:page"
-      data="{{routeData}}"
-      tail="{{subroute}}">
-    </app-route>
-
-  <iron-ajax
-  id="ajaxupdate"
-  url="{{urlUpdate}}"
-  body="{{options}}"
-  method="POST"
-  handle-as="document"
-  content-type="application/x-www-form-urlencoded"
-  on-response="handleResponse"
-  on-error="ajaxError">
-</iron-ajax>
+  <div class="card" >
 
 
-<div class="card">
-  <div class="container">
-    <h1>Cercle</h1>
-      <paper-icon-button
-        icon="vaadin:question-circle-o"
-        link="holocracy-glossaire"
-        anchor="cercle"
-        on-tap="goLink">
-      </paper-icon-button>
-    </div>
-
-  <div class="container " id="container">
-    <paper-input id="nom" label="Nom" type="text"></paper-input>
-    <paper-input id="nomSuper" label="Nom du super-cercle" type="text"></paper-input>
+    <table>
+      <tr>
+        <td>
+          <div class="circle">[[cercle.localName]]</div>
+        </td>
+        <td>
+          <div>
+            <p>uri : [[cercle.value]] ([[cercle.type]])</p>
+            <p>type : [[classe]]</p>
+          </div>
+        </td>
+      </tr>
+    </table>
   </div>
-  <paper-button raised on-tap="addStatement">Ajouter un cercle</paper-button>
+
 </div>
-<paper-toast id="toast"></paper-toast>
--->
 </template>
 
 <script>
 Polymer({
-  is: 'cercle-detail',
+  is: 'cercle-accueil',
   behaviors: [ ReduxBehavior],
   actions:{
     updateLang: function(lang){
@@ -116,6 +91,9 @@ Polymer({
     cercle:{
       type: Object,
       value: {}
+    },
+    classe: {
+      type: String
     }
   },
   addStatement: function() {
@@ -157,9 +135,9 @@ Polymer({
     var body=html.getElementsByTagName("body")[0];
     var resultat=body.getElementsByTagName("h1")[0].firstChild.nodeValue;
     this.result=resultat;
-        				console.log(this.result);
-  //  var nb=this.nb+1;
-  //  this.dispatch('update_nb_maj', nb);
+    console.log(this.result);
+    //  var nb=this.nb+1;
+    //  this.dispatch('update_nb_maj', nb);
   },
 
   /**
